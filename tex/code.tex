@@ -1,0 +1,203 @@
+
+class Person(object):
+    def __init__(self,ok=0,mask=0,probability=.5,distance_succeptibility=5,weakness=0):
+        self.x=random.randint(0,100) #determines person's starting x position
+        self.y=random.randint(0,100) #determines person's starting y position
+        self.ok=ok #ok=0 means not sick, ok=1 means sick, ok=2 means dead etc...
+        self.mask=mask #mask=0 means they dont have a mask, opposite for mask=1
+        self.d=distance_succeptibility
+        self.p=probability
+        self.weak=random.randint(1,100)
+    
+    def RollDiceDie(self): #each day, people with covid will have a chance to die. This depends on their weakness
+        #the weaker they all, the more likely they wil die
+        death=random.randint(1,100)
+        death=death/8
+        if (death > self.weak):
+            self.ok=2
+    def MakeSick(self): #makes a healthy person into a sick one
+        if self.y==0:
+            self.y=1
+            
+    def Die(self): #kills the person (likely because they have succumbed to the disease)
+        self.y=2
+        
+    def MaskUp(self):
+        self.mask=1
+        
+    def Move(self):
+        self.x=self.x+random.uniform(-2,2) #person moves either somewhere from [-2,2] in x direction
+        self.y=self.y+random.uniform(-2,2) #person moves either somewhere from [-2,2] in y direction
+        
+    def Reset(self):
+        if self.ok==2: #if someone is dead, they cant play. So they are moved to where they cant interact with anyone
+            self.x=-10000
+            self.y=-10000
+        else:
+            self.x=random.randint(0,100) #resets their position after each day. 
+            self.y=random.randint(0,100) # (Make sure nobody strays too far out of bounds and stays there)
+        
+        
+    def Proximity(self,other): #this function measures distance between two people and if distance is low
+        #and someone has the disease, they may give it to the other person
+        distance=((self.x-other.x)**2+(self.y-other.y)**2)**(1/2) #calculates distance formula to see how far the two are
+        if distance < self.d: 
+            if self.ok==1 and other.ok==0:
+                probability=self.p
+                if self.mask==1: #probability of getting sick goes down is someone is masked, goes way down if both are
+                    probability=probability/10
+                if other.mask==1:
+                    probability=probability/10
+                if random.random() < probability: #probability of someone getting sick :)
+                    other.ok=1 #is distance is low enough, sick person makes healthy person sick (maybe)
+            if self.ok==0 and other.ok==1:
+                probability=other.p
+                if random.random() < other.p:
+                    self.ok=1
+
+                    
+                
+Population=[] #initializes an initial population of 1000 people
+for i in range (1,100): #all these people aren't sick
+    Population=Population+[Person(ok=0)]
+for i in range (1,3):
+    Population=Population+[Person(ok=1)]
+    
+day=0
+for i in range (1,30):
+    print("Day: {}",i)
+    for Person in Population:
+        Person.RollDiceDie() #each day someone is sick, they might die. This calculates that chance and maybe kills them
+        Person.Reset() #resets at the start of each day
+    for j in range (10):
+        for Person in Population:
+            Person.Move()
+        for Person1 in Population:
+            for Person2 in Population:
+                if Person2 != Person1:
+                    Person1.Proximity(Person2)
+            
+        
+        
+
+
+
+        
+        
+######## First Results:
+Day: 1
+Number of OK: 149
+Number of Sick: 2
+Number of Dead: 0
+Day: 2
+Number of OK: 132
+Number of Sick: 9
+Number of Dead: 10
+Day: 3
+Number of OK: 102
+Number of Sick: 39
+Number of Dead: 10
+Day: 4
+Number of OK: 35
+Number of Sick: 103
+Number of Dead: 13
+Day: 5
+Number of OK: 4
+Number of Sick: 134
+Number of Dead: 13
+Day: 6
+Number of OK: 0
+Number of Sick: 138
+Number of Dead: 13
+Day: 7
+Number of OK: 0
+Number of Sick: 136
+Number of Dead: 15
+Day: 8
+Number of OK: 0
+Number of Sick: 136
+Number of Dead: 15
+Day: 9
+Number of OK: 0
+Number of Sick: 136
+Number of Dead: 15
+Day: 10
+Number of OK: 0
+Number of Sick: 136
+Number of Dead: 15
+Day: 11
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 12
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 13
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 14
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 15
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 16
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 17
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 18
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 19
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 20
+Number of OK: 0
+Number of Sick: 135
+Number of Dead: 16
+Day: 21
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
+Day: 22
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
+Day: 23
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
+Day: 24
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
+Day: 25
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
+Day: 26
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
+Day: 27
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
+Day: 28
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
+Day: 29
+Number of OK: 0
+Number of Sick: 134
+Number of Dead: 17
